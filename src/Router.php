@@ -13,7 +13,7 @@ class Router
      * example /getSmth/
      */
     public const ROUTES = [
-        "/getSmth/getSmb/" => "PerceptronController:testFunc"
+        "/getSmth/getSmb/" => "PerceptronController:getOutputByPerceptron"
     ];
 
     public function main(string $route)
