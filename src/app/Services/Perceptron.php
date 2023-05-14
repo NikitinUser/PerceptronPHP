@@ -6,6 +6,9 @@ use NikitinUser\perceptronPHP\app\Helpers\MatrixHelper;
 
 class Perceptron
 {
+    public const DISPLACEMENT_NEURON = 1;
+    public const COUNT_ITERATION_PROPOGATION = 40000;
+
     private array $trainingInputs = [
         [0, 0, 1, 1],
         [1, 1, 1, 1],
@@ -25,21 +28,19 @@ class Perceptron
         $synapticWeights = $this->backPropagation();
 
         $newInputs = [[1,1,0,1], [1,0,0,1], [0,0,0,1], [0,1,0,1]];
-        $resultMatrix = MatrixHelper::dotProduct($newInputs, $synapticWeights);
-        return $this->sigmoid($resultMatrix);
+        $scalarProducts = MatrixHelper::dotProduct($newInputs, $synapticWeights);
+        return $this->sigmoid($scalarProducts);
     }
 
-    // метод обратного распространения
     public function backPropagation(): array
     {
         $outputs = [];
 
         $synapticWeights = $this->getRandomInputs();
 
-        for ($i = 0; $i < 40000; $i++) {
-
-            $resultMatrix = MatrixHelper::dotProduct($this->trainingInputs, $synapticWeights);
-            $outputs = $this->sigmoid($resultMatrix);
+        for ($i = 0; $i < self::COUNT_ITERATION_PROPOGATION; $i++) {
+            $scalarProducts = MatrixHelper::dotProduct($this->trainingInputs, $synapticWeights);
+            $outputs = $this->sigmoid($scalarProducts);
 
             $err = MatrixHelper::arrayValuesDifferent($this->trainingOutputs, $outputs);
 
@@ -54,7 +55,8 @@ class Perceptron
 
             $synapticWeights = MatrixHelper::sumMatrix($synapticWeights, $adjustment);
         }
-        echo json_encode($outputs, JSON_PRETTY_PRINT);echo "<br><br>";
+        echo json_encode($outputs, JSON_PRETTY_PRINT);
+        echo "<br><br>";
         
         return $synapticWeights;
     }
@@ -65,7 +67,7 @@ class Perceptron
         for ($i = 0; $i < 3; $i++) {
             $randomInputs[$i][0] = $this->randomFloat();
         }
-        $randomInputs[3][0] = 1; //Нейрон смещения
+        $randomInputs[3][0] = self::DISPLACEMENT_NEURON;
         return $randomInputs;
     }
 
