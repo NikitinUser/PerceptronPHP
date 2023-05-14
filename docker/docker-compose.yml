@@ -25,4 +25,4 @@ services:
             - 7777:80
         volumes:
             - ./nginx/conf.d/:/etc/nginx/conf.d/
-            - ${APP_PATH_HOST}/public:${APP_PATH_CONTAINER}/public
+            - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
