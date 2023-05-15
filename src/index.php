@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__.'/vendor/autoload.php';
+require __DIR__.'/config.php';
 
 use NikitinUser\perceptronPHP\Router;
 
@@ -26,4 +27,3 @@ try {
 }
 
 echo $result;
-exit;
