@@ -9,30 +9,34 @@ class Perceptron
     public const DISPLACEMENT_NEURON = 1;
     public const COUNT_ITERATION_PROPOGATION = 40000;
 
-    private array $trainingInputs = [
-        [0, 0, 1, 1],
-        [1, 1, 1, 1],
-        [1, 0, 1, 1],
-        [0, 1, 1, 1]
-    ];
+    private array $trainingInputs;
 
-    private array $trainingOutputs = [
-        [0],
-        [1],
-        [1],
-        [0]
-    ];
+    private array $trainingOutputs;
+
+    public function __construct()
+    {
+        $this->initialTrainingData();
+    }
 
     public function getOutput(): array
     {
-        $synapticWeights = $this->backPropagation();
+        $backPropagationResult = $this->backPropagation();
 
-        $newInputs = [[1,1,0,1], [1,0,0,1], [0,0,0,1], [0,1,0,1]];
+        $synapticWeights = $backPropagationResult["synapticWeights"];
+        $propagationResult = $backPropagationResult["propagationResult"];
+
+        $newInputs = json_decode(file_get_contents(NEW_INPUTS_FILE));
+
         $scalarProducts = MatrixHelper::dotProduct($newInputs, $synapticWeights);
-        return $this->sigmoid($scalarProducts);
+        $perceptronResult = $this->sigmoid($scalarProducts);
+
+        return [
+            "propagationResult" => $propagationResult,
+            "perceptronResult" => $perceptronResult
+        ];
     }
 
-    public function backPropagation(): array
+    private function backPropagation(): array
     {
         $outputs = [];
 
@@ -55,19 +59,34 @@ class Perceptron
 
             $synapticWeights = MatrixHelper::sumMatrix($synapticWeights, $adjustment);
         }
-        echo json_encode($outputs, JSON_PRETTY_PRINT);
-        echo "<br><br>";
         
-        return $synapticWeights;
+        return [
+            "propagationResult" => $outputs,
+            "synapticWeights" => $synapticWeights
+        ];
+    }
+
+    private function sigmoid(array $matrix): array
+    {
+        $output = [];
+
+        foreach ($matrix as $arr) {
+            foreach ($arr as $val) {
+                $sigmoid = 1 / (1 + exp(-$val));
+                $output[] = [$sigmoid];
+            }
+        }
+
+        return $output;
     }
 
     private function getRandomInputs(): array
     {
         $randomInputs = [];
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < (count($this->trainingInputs[0]) - 1); $i++) {
             $randomInputs[$i][0] = $this->randomFloat();
         }
-        $randomInputs[3][0] = self::DISPLACEMENT_NEURON;
+        $randomInputs[count($randomInputs)][0] = self::DISPLACEMENT_NEURON;
         return $randomInputs;
     }
 
@@ -83,17 +102,20 @@ class Perceptron
         return (float)$num;
     }
 
-    private function sigmoid(array $matrix): array
+    private function initialTrainingData()
     {
-        $output = [];
+        $this->trainingInputs = json_decode(file_get_contents(TRAINING_INPUTS_FILE));
+        $this->trainingOutputs = json_decode(file_get_contents(TRAINING_OUTPUTS_FILE));
 
-        foreach ($matrix as $arr) {
-            foreach ($arr as $val) {
-                $sigmoid = 1 / (1 + exp(-$val));
-                $output[] = [$sigmoid];
-            }
+        $this->trainingInputs = $this->addDisplacementNeuron($this->trainingInputs);
+    }
+
+    private function addDisplacementNeuron(array $trainingInputs): array
+    {
+        for ($i = 0; $i < count($trainingInputs); $i++) {
+            $trainingInputs[$i][count($trainingInputs[$i])] = self::DISPLACEMENT_NEURON;
         }
 
-        return $output;
+        return $trainingInputs;
     }
 }

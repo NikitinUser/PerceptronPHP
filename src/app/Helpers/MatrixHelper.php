@@ -73,8 +73,8 @@ class MatrixHelper
     }
 
     /**
-     * this method is analog for numpy.dot
-     * made by chat GPT
+     * этот метод - аналог для numpy.dot
+     * сделано chat GPT
      */
     public static function dotProduct(array $a, array $b)
     {
@@ -113,7 +113,7 @@ class MatrixHelper
     }
 
     /**
-     * made by chat GPT
+     * сделано chat GPT
      */
     private static function shape(array $arr): array
     {
