@@ -18,4 +18,10 @@ class PerceptronController
         $data = $this->perceptronService->getOutput();
         return json_encode([$data]);
     }
+
+    public function startTraining()
+    {
+        $data = $this->perceptronService->startTraining();
+        return json_encode([$data]);
+    }
 }

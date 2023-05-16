@@ -19,10 +19,10 @@ class Perceptron
 
     public function getOutput(): array
     {
-        $backPropagationResult = $this->backPropagation();
-
-        $synapticWeights = $backPropagationResult["synapticWeights"];
-        $propagationResult = $backPropagationResult["propagationResult"];
+        $synapticWeights = json_decode(file_get_contents(SYNAPTIC_WEIGHTS));
+        if (empty($synapticWeights)) {
+            throw new \Exception("ERROR: synapticWeights empty. Run training");
+        }
 
         $newInputs = json_decode(file_get_contents(NEW_INPUTS_FILE));
         $newInputs = $this->addDisplacementNeuron($newInputs);
@@ -30,10 +30,18 @@ class Perceptron
         $scalarProducts = MatrixHelper::dotProduct($newInputs, $synapticWeights);
         $perceptronResult = $this->sigmoid($scalarProducts);
 
-        return [
-            "propagationResult" => $propagationResult,
-            "perceptronResult" => $perceptronResult
-        ];
+        return $perceptronResult;
+    }
+
+    public function startTraining(): array
+    {
+        $backPropagationResult = $this->backPropagation();
+
+        $synapticWeights = $backPropagationResult["synapticWeights"];
+
+        file_put_contents(SYNAPTIC_WEIGHTS, json_encode($synapticWeights));
+
+        return $backPropagationResult;
     }
 
     private function backPropagation(): array
