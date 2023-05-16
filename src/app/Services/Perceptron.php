@@ -6,7 +6,6 @@ use NikitinUser\perceptronPHP\app\Helpers\MatrixHelper;
 
 class Perceptron
 {
-    public const DISPLACEMENT_NEURON = 1;
     public const COUNT_ITERATION_PROPOGATION = 40000;
 
     private array $trainingInputs;
@@ -26,6 +25,7 @@ class Perceptron
         $propagationResult = $backPropagationResult["propagationResult"];
 
         $newInputs = json_decode(file_get_contents(NEW_INPUTS_FILE));
+        $newInputs = $this->addDisplacementNeuron($newInputs);
 
         $scalarProducts = MatrixHelper::dotProduct($newInputs, $synapticWeights);
         $perceptronResult = $this->sigmoid($scalarProducts);
@@ -86,7 +86,7 @@ class Perceptron
         for ($i = 0; $i < (count($this->trainingInputs[0]) - 1); $i++) {
             $randomInputs[$i][0] = $this->randomFloat();
         }
-        $randomInputs[count($randomInputs)][0] = self::DISPLACEMENT_NEURON;
+        $randomInputs[count($randomInputs)][0] = DISPLACEMENT_NEURON;
         return $randomInputs;
     }
 
@@ -113,7 +113,7 @@ class Perceptron
     private function addDisplacementNeuron(array $trainingInputs): array
     {
         for ($i = 0; $i < count($trainingInputs); $i++) {
-            $trainingInputs[$i][count($trainingInputs[$i])] = self::DISPLACEMENT_NEURON;
+            $trainingInputs[$i][count($trainingInputs[$i])] = DISPLACEMENT_NEURON;
         }
 
         return $trainingInputs;
