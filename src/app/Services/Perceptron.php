@@ -6,8 +6,6 @@ use NikitinUser\perceptronPHP\app\Helpers\MatrixHelper;
 
 class Perceptron
 {
-    public const COUNT_ITERATION_PROPOGATION = 40000;
-
     private array $trainingInputs;
 
     private array $trainingOutputs;
@@ -50,7 +48,7 @@ class Perceptron
 
         $synapticWeights = $this->getRandomInputs();
 
-        for ($i = 0; $i < self::COUNT_ITERATION_PROPOGATION; $i++) {
+        for ($i = 0; $i < COUNT_ITERATION_PROPOGATION; $i++) {
             $scalarProducts = MatrixHelper::dotProduct($this->trainingInputs, $synapticWeights);
             $outputs = $this->sigmoid($scalarProducts);
 
@@ -100,10 +98,7 @@ class Perceptron
 
     private function randomFloat()
     {
-        $max = -1.0;
-        $min = 1.0;
-
-        $range = $max - $min;
+        $range = MAX_RND - MIN_RND;
         $num = $min + $range * (mt_rand() / mt_getrandmax());    
         $num = round($num, 2);
 
